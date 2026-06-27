@@ -5,7 +5,7 @@ set -e
 # Job Hunter Agent — Setup do Modelo de IA
 # ──────────────────────────────────────────────
 # Configura o provedor/modelo no config.json
-# Opções: Groq (grátis), Gemini (grátis), DeepSeek (pago)
+# Opções: Gemini (grátis, 1M contexto), DeepSeek (pago)
 # ──────────────────────────────────────────────
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -130,33 +130,6 @@ update_env() {
   ok ".env atualizado com ${var_name}"
 }
 
-# ── Setup Groq ────────────────────────────────
-setup_groq() {
-  echo ""
-  info "Você escolheu: ${GREEN}Groq${NC} (grátis, sem cartão de crédito)"
-  echo ""
-  info "Para obter sua chave da API Groq:"
-  info "1. Acesse https://console.groq.com/keys"
-  echo "   (crie uma conta gratuita se não tiver)"
-  info "2. Clique em 'Create API Key'"
-  info "3. Copie a chave (começa com gsk_)"
-  echo ""
-
-  read -rp "Cole sua API key Groq (gsk_...): " api_key
-  api_key="${api_key:-}"
-
-  if [[ -z "$api_key" ]]; then
-    err "API key não pode ficar vazia"
-    exit 1
-  fi
-
-  update_env "GROQ_API_KEY" "$api_key"
-  generate_config "groq" "Groq" "llama-3.3-70b-versatile" "GROQ_API_KEY" "primary" "0.3" "8192" "131072"
-  ok "Fallback configurado: Google Gemini (grátis)"
-
-  info "Você pode testar com: nanobot agent -m 'Olá'"
-}
-
 # ── Setup Gemini ──────────────────────────────
 setup_gemini() {
   echo ""
@@ -179,7 +152,6 @@ setup_gemini() {
 
   update_env "GEMINI_API_KEY" "$api_key"
   generate_config "gemini" "Gemini" "gemini-2.5-flash" "GEMINI_API_KEY" "primary" "0.3" "8192" "1048576"
-  ok "Fallback configurado: Groq (grátis)"
 
   info "Você pode testar com: nanobot agent -m 'Olá'"
 }
@@ -210,7 +182,6 @@ setup_deepseek() {
 
   update_env "DEEPSEEK_API_KEY" "$api_key"
   generate_config "deepseek" "DeepSeek" "deepseek-chat" "DEEPSEEK_API_KEY" "primary" "0.3" "8192" "65536"
-  ok "Fallback configurado: Groq (grátis)"
 
   info "Você pode testar com: nanobot agent -m 'Olá'"
 }
@@ -264,25 +235,20 @@ main() {
 
   echo -e "Escolha um provedor de IA:"
   echo ""
-  echo -e "  ${GREEN}1)${NC} Groq — Grátis (sem cartão de crédito)"
-  echo -e "     Modelo: Llama 3.3 70B"
-  echo -e "     Limites: 30 req/min, 14.400 req/dia"
-  echo ""
-  echo -e "  ${GREEN}2)${NC} Google Gemini — Grátis (sem cartão de crédito)"
+  echo -e "  ${GREEN}1)${NC} Google Gemini — Grátis (sem cartão de crédito)"
   echo -e "     Modelo: Gemini 2.5 Flash"
   echo -e "     Limites: 1.500 req/dia, 1M tokens de contexto"
   echo ""
-  echo -e "  ${GREEN}3)${NC} DeepSeek — Pago por uso (~\$0.14/M tokens)"
+  echo -e "  ${GREEN}2)${NC} DeepSeek — Pago por uso (~\$0.14/M tokens)"
   echo -e "     Modelo: DeepSeek V4 Flash"
   echo -e "     Qualidade excelente, 1M tokens de contexto"
   echo ""
-  read -rp "Opção (1/2/3) [1]: " opt
+  read -rp "Opção (1/2) [1]: " opt
   opt="${opt:-1}"
 
   case "$opt" in
-    1) setup_groq ;;
-    2) setup_gemini ;;
-    3) setup_deepseek ;;
+    1) setup_gemini ;;
+    2) setup_deepseek ;;
     *) err "Opção inválida"; exit 1 ;;
   esac
 
