@@ -137,7 +137,7 @@ O agente vai:
 O agente vai:
 1. Ler a descrição da vaga
 2. Selecionar suas experiências mais relevantes
-3. Reordenar habilidades para匹配 os requisitos
+3. Reordenar habilidades para os requisitos
 4. Gerar um PDF com HTML+Tailwind via Playwright
 
 ### Escrever carta de apresentação
