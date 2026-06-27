@@ -13,7 +13,9 @@ services:
       - ./workspace_files/AGENTS.md:/home/nanobot/.nanobot/workspace/AGENTS.md:ro
       - ./workspace_files/SOUL.md:/home/nanobot/.nanobot/workspace/SOUL.md:ro
     environment:
-      - DEEPSEEK_API_KEY=${DEEPSEEK_API_KEY:?err}
+      - GROQ_API_KEY=${GROQ_API_KEY:-}
+      - DEEPSEEK_API_KEY=${DEEPSEEK_API_KEY:-}
+      - GEMINI_API_KEY=${GEMINI_API_KEY:-}
       - TELEGRAM_TOKEN=${TELEGRAM_TOKEN:?err}
       - TELEGRAM_ALLOW_FROM=${TELEGRAM_ALLOW_FROM:-*}
     ports:
@@ -43,6 +45,8 @@ services:
       - ./workspace_files/AGENTS.md:/home/nanobot/.nanobot/workspace/AGENTS.md:ro
       - ./workspace_files/SOUL.md:/home/nanobot/.nanobot/workspace/SOUL.md:ro
     environment:
-      - DEEPSEEK_API_KEY=${DEEPSEEK_API_KEY:?err}
+      - GROQ_API_KEY=${GROQ_API_KEY:-}
+      - DEEPSEEK_API_KEY=${DEEPSEEK_API_KEY:-}
+      - GEMINI_API_KEY=${GEMINI_API_KEY:-}
       - TELEGRAM_TOKEN=${TELEGRAM_TOKEN:?err}
       - TELEGRAM_ALLOW_FROM=${TELEGRAM_ALLOW_FROM:-*}
