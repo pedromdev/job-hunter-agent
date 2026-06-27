@@ -5,3 +5,10 @@
 !HEARTBEAT.md
 !memory/MEMORY.md
 !.gitignore
+
+# Runtime data (criado pelo container)
+memory/history.jsonl
+.nanobot/
+sessions/
+cron/
+output/*.pdf
