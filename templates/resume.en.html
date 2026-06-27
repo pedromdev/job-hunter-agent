@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#1e40af',
+            accent: '#3b82f6',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    @page { margin: 15mm 15mm 20mm 15mm; }
+    @page :first { margin-top: 0; }
+    body { font-family: 'Inter', 'Segoe UI', system-ui, sans-serif; }
+    .section-title { border-bottom: 2px solid #3b82f6; padding-bottom: 4px; }
+  </style>
+</head>
+<body class="bg-gray-50 text-gray-900 text-sm leading-relaxed">
+  <div class="max-w-[210mm] mx-auto bg-white">
+    <div class="bg-primary text-white px-8 py-6">
+      <h1 class="text-3xl font-bold">{{ name }}</h1>
+      <p class="text-lg text-blue-200 mt-1">{{ role }}</p>
+      <div class="flex flex-wrap gap-x-6 gap-y-1 mt-3 text-sm text-blue-100">
+        {% if contact.email %}<span>&#9993; {{ contact.email }}</span>{% endif %}
+        {% if contact.phone %}<span>&#9742; {{ contact.phone }}</span>{% endif %}
+        {% if contact.linkedin %}<span>in/ {{ contact.linkedin }}</span>{% endif %}
+        {% if contact.github %}<span>&#128187; {{ contact.github }}</span>{% endif %}
+      </div>
+    </div>
+
+    <div class="px-8 py-6 space-y-6">
+      <section>
+        <h2 class="section-title text-primary font-semibold text-base mb-3">About Me</h2>
+        <p class="text-gray-700">{{ about }}</p>
+      </section>
+
+      <section>
+        <h2 class="section-title text-primary font-semibold text-base mb-3">Experience</h2>
+        <div class="space-y-4">
+          {% for exp in experiences %}
+          <div>
+            <div class="flex justify-between items-baseline">
+              <h3 class="font-semibold text-gray-900">{{ exp.role }}</h3>
+              <span class="text-xs text-gray-500">{{ exp.period }}</span>
+            </div>
+            <p class="text-sm text-accent">{{ exp.company }}</p>
+            <p class="text-gray-600 mt-1">{{ exp.description }}</p>
+            {% if exp.highlights %}
+            <ul class="list-disc list-inside text-gray-600 mt-1 space-y-0.5">
+              {% for h in exp.highlights %}
+              <li>{{ h }}</li>
+              {% endfor %}
+            </ul>
+            {% endif %}
+          </div>
+          {% endfor %}
+        </div>
+      </section>
+
+      <section>
+        <h2 class="section-title text-primary font-semibold text-base mb-3">Projects</h2>
+        <div class="grid grid-cols-1 gap-3">
+          {% for proj in projects %}
+          <div class="border border-gray-200 rounded p-3">
+            <h3 class="font-semibold text-gray-900">{{ proj.name }}</h3>
+            <p class="text-gray-600 text-xs mt-1">{{ proj.description }}</p>
+            {% if proj.technologies %}
+            <div class="flex flex-wrap gap-1 mt-2">
+              {% for tech in proj.technologies %}
+              <span class="bg-blue-50 text-primary text-xs px-2 py-0.5 rounded">{{ tech }}</span>
+              {% endfor %}
+            </div>
+            {% endif %}
+          </div>
+          {% endfor %}
+        </div>
+      </section>
+
+      <section>
+        <h2 class="section-title text-primary font-semibold text-base mb-3">Skills</h2>
+        <div class="flex flex-wrap gap-2">
+          {% for skill in skills %}
+          <span class="bg-gray-100 text-gray-800 text-xs px-3 py-1 rounded-full border border-gray-200">{{ skill }}</span>
+          {% endfor %}
+        </div>
+      </section>
+
+      {% if activities %}
+      <section>
+        <h2 class="section-title text-primary font-semibold text-base mb-3">Extracurricular Activities</h2>
+        <div class="space-y-3">
+          {% for act in activities %}
+          <div>
+            <h3 class="font-semibold text-gray-900">{{ act.name }}</h3>
+            {% if act.year %}<p class="text-xs text-gray-500">{{ act.year }}</p>{% endif %}
+            <p class="text-gray-600 text-sm mt-1">{{ act.description }}</p>
+            {% if act.technologies %}
+            <div class="flex flex-wrap gap-1 mt-1">
+              {% for tech in act.technologies %}
+              <span class="bg-blue-50 text-primary text-xs px-2 py-0.5 rounded">{{ tech }}</span>
+              {% endfor %}
+            </div>
+            {% endif %}
+            {% if act.url %}
+            <a href="{{ act.url }}" class="text-xs text-accent hover:underline mt-1 inline-block">{{ act.url }}</a>
+            {% endif %}
+          </div>
+          {% endfor %}
+        </div>
+      </section>
+      {% endif %}
+
+      <section>
+        <h2 class="section-title text-primary font-semibold text-base mb-3">Education</h2>
+        <div class="space-y-2">
+          {% for edu in education %}
+          <div class="flex justify-between items-baseline">
+            <div>
+              <h3 class="font-semibold text-gray-900">{{ edu.degree }}</h3>
+              <p class="text-sm text-gray-500">{{ edu.institution }}</p>
+            </div>
+            <span class="text-xs text-gray-500">{{ edu.period }}</span>
+          </div>
+          {% endfor %}
+        </div>
+      </section>
+    </div>
+  </div>
+</body>
+</html>

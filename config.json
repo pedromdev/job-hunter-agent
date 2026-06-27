@@ -1,0 +1,52 @@
+{
+  "providers": {
+    "deepseek": {
+      "apiKey": "${DEEPSEEK_API_KEY}"
+    }
+  },
+  "modelPresets": {
+    "primary": {
+      "label": "Principal",
+      "provider": "deepseek",
+      "model": "deepseek-chat",
+      "maxTokens": 8192,
+      "contextWindowTokens": 65536,
+      "temperature": 0.3
+    }
+  },
+  "channels": {
+    "telegram": {
+      "enabled": true,
+      "token": "${TELEGRAM_TOKEN}",
+      "allowFrom": ["${TELEGRAM_ALLOW_FROM}"]
+    },
+    "websocket": {
+      "enabled": false
+    }
+  },
+  "agents": {
+    "defaults": {
+      "provider": "deepseek",
+      "model": "deepseek-chat",
+      "maxTokens": 8192,
+      "contextWindowTokens": 65536,
+      "temperature": 0.3,
+      "modelPreset": "primary",
+      "dream": {
+        "enabled": true,
+        "intervalM": 240
+      }
+    }
+  },
+  "tools": {
+    "web": {
+      "search": { "enabled": true },
+      "fetch": { "enabled": true }
+    },
+    "restrictToWorkspace": false
+  },
+  "gateway": {
+    "host": "0.0.0.0",
+    "port": 18790
+  }
+}

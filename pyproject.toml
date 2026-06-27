@@ -1,0 +1,21 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "job-hunter-tools"
+version = "0.1.0"
+description = "Custom Nanobot tools for job hunting"
+requires-python = ">=3.11"
+dependencies = [
+    "jinja2",
+    "playwright",
+    "httpx",
+    "beautifulsoup4",
+    "lxml",
+]
+
+[project.entry-points."nanobot.tools"]
+job_scraper = "job_hunter_tools.job_scraper:JobScraperTool"
+resume_generator = "job_hunter_tools.resume_generator:ResumeGeneratorTool"
+cover_letter = "job_hunter_tools.cover_letter:CoverLetterTool"

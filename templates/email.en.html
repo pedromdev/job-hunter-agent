@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { font-family: 'Inter', 'Segoe UI', system-ui, sans-serif; }
+  </style>
+</head>
+<body class="bg-gray-50 p-6">
+  <div class="max-w-2xl mx-auto bg-white rounded-lg p-8">
+    <p class="text-gray-700">Dear <strong>{{ recruiter_name or "Hiring Manager" }}</strong>,</p>
+
+    <div class="mt-4 text-gray-600 space-y-3">
+      {% for paragraph in body_paragraphs %}
+      <p>{{ paragraph }}</p>
+      {% endfor %}
+    </div>
+
+    <div class="mt-6 pt-4 border-t border-gray-200">
+      <p class="text-gray-700">Best regards,</p>
+      <p class="font-semibold text-gray-900">{{ name }}</p>
+      {% if contact %}
+        {% if contact.email %}<p class="text-sm text-gray-500">{{ contact.email }}</p>{% endif %}
+        {% if contact.phone %}<p class="text-sm text-gray-500">{{ contact.phone }}</p>{% endif %}
+        {% if contact.linkedin %}<p class="text-sm text-gray-500">linkedin.com/in/{{ contact.linkedin }}</p>{% endif %}
+      {% endif %}
+    </div>
+  </div>
+</body>
+</html>

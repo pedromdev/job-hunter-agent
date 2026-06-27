@@ -1,0 +1,22 @@
+# Environment variables
+.env
+
+# Python
+__pycache__/
+*.pyc
+*.egg-info/
+dist/
+build/
+
+# IDE
+.idea/
+.vscode/
+
+# Generated PDFs
+workspace/output/*.pdf
+resume_*.pdf
+
+# Runtime data
+workspace/sessions/
+workspace/.nanobot/
+workspace/cron/
