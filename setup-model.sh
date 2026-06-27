@@ -220,7 +220,15 @@ validate_config() {
   echo ""
   info "Validando configuração..."
 
+  NANOBOT_PATH=""
   if command -v nanobot &>/dev/null; then
+    NANOBOT_PATH="$(command -v nanobot 2>/dev/null)"
+    if [ ! -x "$NANOBOT_PATH" ]; then
+      NANOBOT_PATH=""
+    fi
+  fi
+
+  if [ -n "$NANOBOT_PATH" ]; then
     if nanobot status 2>&1 | head -20; then
       ok "Nanobot reconheceu a configuração"
     else

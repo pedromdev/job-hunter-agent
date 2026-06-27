@@ -1,16 +1,16 @@
 {
   "providers": {
-    "deepseek": {
-      "apiKey": "${DEEPSEEK_API_KEY}"
+    "groq": {
+      "apiKey": "${GROQ_API_KEY}"
     }
   },
   "modelPresets": {
     "primary": {
-      "label": "Principal",
-      "provider": "deepseek",
-      "model": "deepseek-chat",
+      "label": "Groq",
+      "provider": "groq",
+      "model": "llama-3.3-70b-versatile",
       "maxTokens": 8192,
-      "contextWindowTokens": 65536,
+      "contextWindowTokens": 131072,
       "temperature": 0.3
     }
   },
@@ -26,12 +26,12 @@
   },
   "agents": {
     "defaults": {
-      "provider": "deepseek",
-      "model": "deepseek-chat",
-      "maxTokens": 8192,
-      "contextWindowTokens": 65536,
-      "temperature": 0.3,
       "modelPreset": "primary",
+      "provider": "groq",
+      "model": "llama-3.3-70b-versatile",
+      "maxTokens": 8192,
+      "contextWindowTokens": 131072,
+      "temperature": 0.3,
       "dream": {
         "enabled": true,
         "intervalM": 240
