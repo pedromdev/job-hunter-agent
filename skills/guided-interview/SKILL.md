@@ -213,6 +213,41 @@ _Industry: [ramo]_
 
 4. **Importante:** A seção `## Companies` deve conter APENAS a descrição do negócio de cada empresa (ramo, produto, mercado). NÃO inclua a relação do usuário com a empresa ali — isso já foi incorporado na descrição da experiência na Etapa 7.
 
+## Etapa Final+ — Preencher as partes fixas do template do currículo
+
+Com o `RESUME.md` pronto, falta preencher as **partes fixas do template** do currículo. O template fica em `$JOB_HUNTER_TEMPLATES` (por padrão `/app/templates`) e tem 4 arquivos:
+
+- `resume.pt-br.html` e `resume.pt-br.txt`
+- `resume.en.html` e `resume.en.txt`
+
+Nesses arquivos, **apenas `{{ about }}` e `{{ experiences }}` são dinâmicos** (vêm do JSON a cada vaga). Todo o resto é fixo e precisa refletir o perfil do usuário:
+
+1. Cabeçalho: nome, objetivo/cargo, endereço (cidade/estado), telefone, e-mail, LinkedIn e GitHub
+2. Formação Acadêmica
+3. Tecnologias e Ferramentas (agrupadas por categoria)
+4. Idiomas
+5. Habilidades Comportamentais
+6. Habilidades Técnicas
+
+### Como preencher
+
+1. **Derive o conteúdo das partes fixas** a partir do `RESUME.md`:
+   - Objetivo: o cargo-alvo declarado (ou o último cargo, se não houver alvo)
+   - Contato: nome, telefone, e-mail, LinkedIn e GitHub; endereço apenas cidade/estado
+   - Formação: cursos e instituições
+   - Tecnologias e Ferramentas: agrupe as skills em categorias (ex: Front-end, Back-end, APIs e Arquitetura, Bancos de Dados, Cloud/DevOps/Infra, Qualidade e Observabilidade, Gestão e Colaboração, Ferramentas de IA). Não invente: use só o que existe no perfil
+   - Idiomas: apenas os com proficiência declarada
+   - Habilidades Comportamentais e Técnicas: derivadas do perfil, sem clichê genérico
+2. **Proponha o texto ao usuário**, em uma mensagem curta, mostrando as partes fixas preenchidas **nos dois idiomas** (pt-br e en). Explique que isso vai ser fixado no template e não muda por vaga.
+3. **Espere a aprovação explícita.** Se o usuário pedir ajustes, refaça e proponha de novo.
+4. **Aprovado, escreva direto nos 4 arquivos** do template, mantendo **intactos** os placeholders `{{ about }}` e `{{ experiences }}` (e o restante da marcação). Use as ferramentas de leitura e escrita/edição de arquivo.
+5. **Mantenha pt-br e en em sincronia** — as duas versões devem dizer a mesma coisa.
+6. Se o usuário pedir para pular, deixe o template como está e avise que as partes fixas ainda são as antigas.
+
+### Atualização posterior
+
+Se o perfil mudar depois (novo cargo-alvo, skills, formação), ofereça atualizar as partes fixas do template. A regra é a mesma: propor primeiro, aplicar depois da aprovação, nunca sobrescrever os placeholders dinâmicos.
+
 ## Regras de Skills
 
 Ao montar a seção `## Skills`:
