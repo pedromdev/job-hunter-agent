@@ -20,3 +20,7 @@ resume_*.pdf
 workspace/sessions/
 workspace/.nanobot/
 workspace/cron/
+
+# MemPalace per-project files (issue #185)
+mempalace.yaml
+entities.json
