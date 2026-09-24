@@ -2,14 +2,18 @@
 
 [![Nanobot](https://img.shields.io/badge/powered%20by-Nanobot-8B5CFE)](https://github.com/HKUDS/nanobot)
 
-Um agente de IA no Telegram para caça a vagas de emprego — busca em múltiplas plataformas, gera currículos adaptados em PDF e escreve cartas de apresentação. Construído sobre o [Nanobot](https://github.com/HKUDS/nanobot).
+Um assistente de carreira no Telegram para **avaliação de processo seletivo** — analisa a vaga que você traz, gera currículos em PDF a partir de um template fixo, valida aderência ATS, escreve cartas e mensagens, pesquisa empresas e sugere projetos de desenvolvimento. Construído sobre o [Nanobot](https://github.com/HKUDS/nanobot).
+
+> **Escopo:** o agente trabalha com a vaga que você traz. Ele **não faz varredura de vagas** nem gerencia fila de candidaturas.
 
 ## Arquitetura
 
 ```
-Telegram → Nanobot Gateway → Agent Loop → job_scraper
-                                         → resume_generator (Jinja2 + Playwright → PDF)
-                                         → cover_letter (texto ou PDF)
+Telegram → Nanobot Gateway → Agent Loop → resume_generator (Jinja2 + Playwright → PDF)
+                                         → resume_editor
+                                         → ats_validator / ats_format_check
+                                         → cover_letter
+                                         → company_researcher / career_compass
                                          → web_search / web_fetch
 ```
 
@@ -18,7 +22,6 @@ Telegram → Nanobot Gateway → Agent Loop → job_scraper
 - [Docker](https://docs.docker.com/get-docker/) + Compose
 - Uma chave de API de um provedor de IA (veja o script `setup-model.sh`)
 - Um token de bot do Telegram (criado via @BotFather)
-- Um currículo preenchido em `RESUME.md`
 
 ## Início Rápido
 
@@ -34,9 +37,9 @@ Edite `.env` com suas chaves:
 
 ```env
 # Escolha UM provedor (veja setup-model.sh para mais opções)
-DEEPSEEK_API_KEY=sk-sua-chave-aqui
+GEMINI_API_KEY=sua-chave-aqui
+# ou DEEPSEEK_API_KEY=sk-sua-chave-aqui
 # ou GROQ_API_KEY=gsk_sua-chave-aqui
-# ou GEMINI_API_KEY=sua-chave-aqui
 
 TELEGRAM_TOKEN=1234567890:ABCdefGHIjklmNOPqrstUVwxyz
 TELEGRAM_ALLOW_FROM=*
@@ -52,59 +55,11 @@ chmod +x setup-model.sh
 ```
 
 Opções disponíveis:
-- **Groq** — grátis, sem cartão de crédito (Llama 3.3 70B)
 - **Google Gemini** — grátis, sem cartão de crédito (Gemini 2.5 Flash)
+- **Groq** — grátis, sem cartão de crédito (Llama 3.3 70B)
 - **DeepSeek** — pago por uso, ~$0.14/M tokens (DeepSeek V4 Flash)
 
-### 3. Preencha seu perfil
-
-Edite `RESUME.md` com suas informações profissionais completas — esta é a fonte da verdade do agente.
-
-Opcional: edite `workspace/USER.md` com suas preferências.
-
-### 4. Configure as plataformas de vaga
-
-Edite `JOBS_PLATFORMS.md` para ativar/desativar plataformas. Suportadas atualmente:
-
-| Plataforma | Chave | Tipo |
-|------------|-------|------|
-| Indeed (global) | `indeed` | RSS |
-| Indeed Brasil | `indeed_br` | RSS |
-| Remote OK | `remoteok` | API JSON |
-| Programathor | `programathor` | HTML scraping |
-| GeekHunter | `geekhunter` | HTML scraping |
-
-### 5. Configure o Telegram
-
-#### 5.1 Crie um bot no Telegram
-
-1. Abra o Telegram e procure por **@BotFather**
-2. Envie o comando `/newbot`
-3. Escolha um nome (ex: "Meu Job Hunter")
-4. Escolha um username único terminando em `bot` (ex: `MeuJobHunterBot`)
-5. O @BotFather vai responder com um token. **Copie este token** — será seu `TELEGRAM_TOKEN`
-
-#### 5.2 Descubra seu User ID
-
-**Opção A — Pelo @userinfobot:**
-1. Pesquise por **@userinfobot** no Telegram
-2. Envie `/start`
-3. O bot responderá com seu ID numérico
-
-**Opção B — Pelo próprio Job Hunter Agent:**
-1. Deixe o `TELEGRAM_ALLOW_FROM` como `*` temporariamente
-2. Suba o bot com `docker compose up -d`
-3. Envie qualquer mensagem para o bot no Telegram
-4. Veja nos logs: `docker compose logs job-hunter | grep "from"`
-
-#### 5.3 Configure no .env
-
-```env
-TELEGRAM_TOKEN=1234567890:ABCdefGHIjklmNOPqrstUVwxyz
-TELEGRAM_ALLOW_FROM=123456789    # seu user ID numérico
-```
-
-### 6. Construa e rode
+### 3. Construa e rode
 
 ```bash
 docker compose build
@@ -113,46 +68,55 @@ docker compose up -d
 
 O bot está no ar no Telegram. Envie qualquer mensagem para começar.
 
-### 7. Teste via CLI
+### 4. Monte seu perfil (entrevista guiada)
+
+No primeiro contato, o agente conduz uma **entrevista guiada** que constrói o `RESUME.md` e, em seguida, preenche as **partes fixas do template** do currículo. Depois disso vem o onboarding, que calibra suas preferências.
+
+### 5. Teste via CLI
 
 ```bash
-docker compose run --rm job-hunter-cli agent -m "Busque vagas de React developer"
+docker compose run --rm job-hunter-cli agent -m "Olá"
 ```
 
 ## Exemplos de Uso
 
-### Buscar vagas
+### Analisar uma vaga
 
-Converse com o bot no Telegram: "Busque vagas de desenvolvedor Python remoto"
+"Analise esta vaga: <link ou texto>"
 
-O agente vai:
-1. Pesquisar em todas as plataformas configuradas
-2. Pontuar cada vaga contra suas habilidades (RESUME.md)
-3. Mostrar resultados ordenados por fit (🟢 ≥70% / 🟡 40-69% / 🔴 <40%)
+O agente salva a JD em `job_descriptions/`, separa requisitos obrigatórios de diferenciais, procura armadilhas, pesquisa a empresa, calcula o fit (🟢 ≥70% / 🟡 40-69% / 🔴 <40%) e dá um veredito explícito.
 
-### Gerar currículo adaptado
+### Gerar currículo
 
 "Gere um currículo para a vaga de Senior Software Engineer na TechCorp"
 
-O agente vai:
-1. Ler a descrição da vaga
-2. Selecionar suas experiências mais relevantes
-3. Reordenar habilidades para匹配 os requisitos
-4. Gerar um PDF com HTML+Tailwind via Playwright
+O agente monta `about` e `experiences` no Padrão Narrativo Permanente, renderiza o template fixo (pt-br ou en) via Playwright, gera o `.txt` para ATS e valida com `ats_validator` e `ats_format_check`.
 
-### Escrever carta de apresentação
+### Carta e mensagens
 
-"Escreva uma carta de apresentação para a vaga de Full Stack Developer"
+"Escreva uma carta para essa vaga" — texto pronto para copiar ou PDF formal. Cold messages seguem o formato de 3 linhas (especificidade, prova em número, pedido pequeno).
 
-O agente retorna texto formatado (pronto para copiar) ou PDF formal.
+### Pesquisar empresa
+
+"Pesquise a empresa X" — dossiê estruturado com descrição, liderança, produtos, clientes, modelo de negócio e faixas salariais.
+
+### Desenvolver competências
+
+"Quero melhorar em Kubernetes e DDD" — o `career_compass` sugere projetos práticos que fecham os gaps.
 
 ## Tools Customizadas
 
-O projeto inclui 3 tools Nanobot em `job_hunter_tools/`:
+O projeto inclui 7 tools Nanobot em `job_hunter_tools/`:
 
-- **`job_scraper`** — busca no Indeed (RSS), RemoteOK (API JSON), Programathor e GeekHunter (HTML)
-- **`resume_generator`** — renderiza template Jinja2 com Tailwind CSS, exporta para PDF via Playwright/Chromium
-- **`cover_letter`** — gera cartas de apresentação personalizadas em texto ou PDF
+| Tool | Função |
+|------|--------|
+| `resume_generator` | Gera PDF do currículo e `.txt` para ATS (`about` + `experiences`) |
+| `resume_editor` | Escreve o conteúdo completo do `RESUME.md` (proposta de atualização) |
+| `ats_validator` | Mede aderência do currículo a uma JD e classifica skills ausentes |
+| `ats_format_check` | Checa formatação, dados pessoais, seções obsoletas e bullets |
+| `cover_letter` | Carta, e-mail e cold message (texto ou PDF) |
+| `company_researcher` | Pesquisa estruturada de empresa |
+| `career_compass` | Projetos para fechar gaps e desenvolvimento de competências |
 
 Para adicionar uma nova tool:
 1. Crie uma classe extendendo `nanobot.agent.tools.base.Tool`
@@ -161,14 +125,16 @@ Para adicionar uma nova tool:
 
 ## Templates
 
-Os templates estão em `templates/` usando Jinja2 + Tailwind CSS (carregado via CDN):
+Os templates estão em `templates/` (montados read-write no container):
 
 | Arquivo | Finalidade |
 |---------|------------|
-| `resume.pt-br.html` | Template de currículo — Português |
-| `resume.en.html` | Template de currículo — Inglês |
+| `resume.pt-br.html` / `resume.pt-br.txt` | Currículo — Português (PDF + ATS) |
+| `resume.en.html` / `resume.en.txt` | Currículo — Inglês (PDF + ATS) |
 | `email.pt-br.html` | Carta de apresentação — Português |
 | `email.en.html` | Carta de apresentação — Inglês |
+
+**Partes fixas vs dinâmicas:** cabeçalho, contato, objetivo, formação, tecnologias, idiomas e habilidades são **fixos** no template e preenchidos após a entrevista guiada. Apenas `{{ about }}` e `{{ experiences }}` são dinâmicos e mudam por vaga.
 
 ## Estrutura do Projeto
 
@@ -180,21 +146,27 @@ Os templates estão em `templates/` usando Jinja2 + Tailwind CSS (carregado via 
 ├── setup-model.sh               Script interativo de configuração do modelo
 │
 ├── job_hunter_tools/            Tools Nanobot customizadas (Python)
-│   ├── job_scraper.py
 │   ├── resume_generator.py
-│   └── cover_letter.py
+│   ├── resume_editor.py
+│   ├── ats_validator.py
+│   ├── ats_format_checker.py
+│   ├── cover_letter.py
+│   ├── company_researcher.py
+│   ├── career_compass.py
+│   ├── ats/                     Motor ATS (parser, scorer, TF-IDF, formatação)
+│   └── compass/                 Catálogo de arquétipos e skills por cargo
 │
-├── templates/                   Templates HTML Jinja2
-├── skills/job-hunter/SKILL.md   Skill Nanobot (persona + workflow do agente)
+├── templates/                   Templates Jinja2 (currículo + e-mail)
+├── skills/                      Skills Nanobot (job-hunter + guided-interview)
 ├── RESUME.md                    Seu currículo (fonte da verdade)
-├── JOBS_PLATFORMS.md            Configuração das plataformas de vaga
 │
 ├── workspace_files/             Montado como read-only no container
 │   ├── AGENTS.md                Instruções do agente
 │   └── SOUL.md                  Personalidade do agente
 │
 ├── workspace/                   Dados de execução (persistidos)
-│   ├── output/                  PDFs gerados
+│   ├── output/                  PDFs e .txt gerados
+│   ├── job_descriptions/        Vagas salvas
 │   ├── memory/MEMORY.md         Memória do agente
 │   ├── USER.md                  Preferências do usuário
 │   └── HEARTBEAT.md             Tarefas periódicas
@@ -207,9 +179,9 @@ Os templates estão em `templates/` usando Jinja2 + Tailwind CSS (carregado via 
 
 | Variável | Obrigatório | Descrição |
 |----------|-------------|-----------|
+| `GEMINI_API_KEY` | Não* | Chave da API Google Gemini (padrão) |
 | `DEEPSEEK_API_KEY` | Não* | Chave da API DeepSeek |
-| `GROQ_API_KEY` | Não* | Chave da API Groq (grátis) |
-| `GEMINI_API_KEY` | Não* | Chave da API Google Gemini (grátis) |
+| `GROQ_API_KEY` | Não* | Chave da API Groq |
 | `TELEGRAM_TOKEN` | Sim | Token do bot Telegram |
 | `TELEGRAM_ALLOW_FROM` | Não | Restringir a user IDs (separados por vírgula) ou `*` |
 
@@ -233,12 +205,6 @@ docker compose logs -f
 # Parar
 docker compose down
 ```
-
-## Adicionar uma Plataforma de Vaga
-
-1. Adicione um handler em `job_hunter_tools/job_scraper.py` (dicionário `PLATFORM_HANDLERS`)
-2. Adicione a plataforma em `JOBS_PLATFORMS.md`
-3. Reconstrua: `docker compose build`
 
 ## Licença
 
