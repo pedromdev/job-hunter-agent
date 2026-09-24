@@ -1,0 +1,55 @@
+YOUR NAME
+Objective: Your Target Role
+Location: City, State, Country
+Phone: +00 00 00000-0000
+Email: your.email@example.com
+LinkedIn: your-profile | GitHub: your-profile
+
+PROFESSIONAL SUMMARY
+{{ about }}
+
+EDUCATION
+- Systems Analysis and Development - FIC | 2015 – 2017
+
+{% if experiences %}
+PROFESSIONAL EXPERIENCE
+{% for exp in experiences %}
+Role: {{ exp.role }}
+Company: {{ exp.company }}
+{% if exp.period %}Period: {{ exp.period }}{% endif %}
+{% if exp.bullets %}
+{% for h in exp.bullets %}
+- {{ h }}
+{% endfor %}
+{% endif %}
+
+{% endfor %}
+{% endif %}
+
+TECHNOLOGIES & TOOLS
+- Front-end: React, Angular, Vue.js, TypeScript, React Native, Flutter, NgRx, Redux, Context API, SSR, PWA, Storybook, Design Systems, JavaScript, HTML5, CSS3, Bootstrap.
+- Back-end: Node.js, NestJS, Fastify, Express, Python, Flask, PHP, C#/.NET, CodeIgniter 4, Zend Framework 2, Apollo Server.
+- APIs & Architecture: REST, GraphQL, Hexagonal Architecture, DDD, CQRS, BFF, Design Patterns, SOLID, Clean Architecture.
+- Databases: PostgreSQL, MongoDB, SQL, Elasticsearch, TSVECTOR, SQLAlchemy, data modeling.
+- Cloud, DevOps & Infrastructure: AWS, ECS, Lambda, SQS, S3, RDS, CloudFront, ECR, Fargate, Terraform, Serverless Framework, Docker, Kubernetes, CI/CD, Bitbucket, AWS CodePipeline, EFS, Load Balancer.
+- Quality & Observability: Playwright, Jasmine, Jest, TDD, Prometheus, Grafana, Sentry.
+- Management & Collaboration: SCRUM, Kanban, Jira, Confluence, Figma.
+- AI Tools: Cursor, Claude Code, Copilot.
+
+LANGUAGES
+- Portuguese — Native
+- English — Intermediate
+
+SOFT SKILLS
+- Assertive Communication
+- Analytical Intelligence
+- Autonomy
+- Teamwork
+- Problem Solving
+
+TECHNICAL SKILLS
+- Software Architecture
+- API Development
+- Cloud Computing
+- Data Modeling
+- Performance and Optimization

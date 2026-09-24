@@ -6,9 +6,9 @@ services:
     restart: unless-stopped
     volumes:
       - ./workspace:/home/nanobot/.nanobot/workspace
+      - ./templates:/app/templates
       - ./config.json:/home/nanobot/.nanobot/config.json:ro
       - ./RESUME.md:/home/nanobot/.nanobot/workspace/RESUME.md
-      - ./JOBS_PLATFORMS.md:/home/nanobot/.nanobot/workspace/JOBS_PLATFORMS.md:ro
       - ./skills/:/home/nanobot/.nanobot/workspace/skills/:ro
       - ./workspace_files/AGENTS.md:/home/nanobot/.nanobot/workspace/AGENTS.md:ro
       - ./workspace_files/SOUL.md:/home/nanobot/.nanobot/workspace/SOUL.md:ro
@@ -38,9 +38,9 @@ services:
     tty: true
     volumes:
       - ./workspace:/home/nanobot/.nanobot/workspace
+      - ./templates:/app/templates
       - ./config.json:/home/nanobot/.nanobot/config.json:ro
       - ./RESUME.md:/home/nanobot/.nanobot/workspace/RESUME.md
-      - ./JOBS_PLATFORMS.md:/home/nanobot/.nanobot/workspace/JOBS_PLATFORMS.md:ro
       - ./skills/:/home/nanobot/.nanobot/workspace/skills/:ro
       - ./workspace_files/AGENTS.md:/home/nanobot/.nanobot/workspace/AGENTS.md:ro
       - ./workspace_files/SOUL.md:/home/nanobot/.nanobot/workspace/SOUL.md:ro

@@ -1,0 +1,55 @@
+SEU NOME
+Objetivo: Seu Cargo Alvo
+Endereço: Cidade, Estado, Brasil
+Telefone: (00) 00000-0000
+E-mail: seu.email@exemplo.com
+LinkedIn: seu-usuario | GitHub: seu-usuario
+
+RESUMO PROFISSIONAL
+{{ about }}
+
+FORMAÇÃO ACADÊMICA
+- Análise e Desenvolvimento de Sistemas - FIC | 2015 – 2017
+
+{% if experiences %}
+EXPERIÊNCIA PROFISSIONAL
+{% for exp in experiences %}
+Cargo: {{ exp.role }}
+Empresa: {{ exp.company }}
+{% if exp.period %}Período: {{ exp.period }}{% endif %}
+{% if exp.bullets %}
+{% for h in exp.bullets %}
+- {{ h }}
+{% endfor %}
+{% endif %}
+
+{% endfor %}
+{% endif %}
+
+TECNOLOGIAS E FERRAMENTAS
+- Front-end: React, Angular, Vue.js, TypeScript, React Native, Flutter, NgRx, Redux, Context API, SSR, PWA, Storybook, Design Systems, JavaScript, HTML5, CSS3, Bootstrap.
+- Back-end: Node.js, NestJS, Fastify, Express, Python, Flask, PHP, C#/.NET, CodeIgniter 4, Zend Framework 2, Apollo Server.
+- APIs e Arquitetura: REST, GraphQL, Arquitetura Hexagonal, DDD, CQRS, BFF, Design Patterns, SOLID, Clean Architecture.
+- Bancos de Dados: PostgreSQL, MongoDB, SQL, Elasticsearch, TSVECTOR, SQLAlchemy, modelagem de dados.
+- Cloud, DevOps e Infraestrutura: AWS, ECS, Lambda, SQS, S3, RDS, CloudFront, ECR, Fargate, Terraform, Serverless Framework, Docker, Kubernetes, CI/CD, Bitbucket, AWS CodePipeline, EFS, Load Balancer.
+- Qualidade e Observabilidade: Playwright, Jasmine, Jest, TDD, Prometheus, Grafana, Sentry.
+- Gestão e Colaboração: SCRUM, Kanban, Jira, Confluence, Figma.
+- Ferramentas de IA: Cursor, Claude Code, Copilot.
+
+IDIOMAS
+- Português — Nativo
+- Inglês — Intermediário
+
+HABILIDADES COMPORTAMENTAIS
+- Comunicação Assertiva
+- Inteligência Analítica
+- Autonomia
+- Trabalho em Equipe
+- Resolução de Problemas
+
+HABILIDADES TÉCNICAS
+- Arquitetura de Software
+- Desenvolvimento de APIs
+- Cloud Computing
+- Modelagem de Dados
+- Performance e Otimização

@@ -13,6 +13,9 @@
     <p class="text-gray-700">Dear <strong>{{ recruiter_name or "Hiring Manager" }}</strong>,</p>
 
     <div class="mt-4 text-gray-600 space-y-3">
+      {% if opening_line %}<p>{{ opening_line }}</p>{% endif %}
+      {% if proof_line %}<p>{{ proof_line }}</p>{% endif %}
+      {% if ask_line %}<p>{{ ask_line }}</p>{% endif %}
       {% for paragraph in body_paragraphs %}
       <p>{{ paragraph }}</p>
       {% endfor %}
