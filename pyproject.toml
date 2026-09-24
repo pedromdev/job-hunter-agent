@@ -13,9 +13,15 @@ dependencies = [
     "httpx",
     "beautifulsoup4",
     "lxml",
+    "scikit-learn",
+    "PyPDF2",
 ]
 
 [project.entry-points."nanobot.tools"]
-job_scraper = "job_hunter_tools.job_scraper:JobScraperTool"
 resume_generator = "job_hunter_tools.resume_generator:ResumeGeneratorTool"
+resume_editor = "job_hunter_tools.resume_editor:ResumeEditorTool"
+ats_validator = "job_hunter_tools.ats_validator:ATSValidatorTool"
+ats_format_check = "job_hunter_tools.ats_format_checker:ATSFormatCheckerTool"
 cover_letter = "job_hunter_tools.cover_letter:CoverLetterTool"
+company_researcher = "job_hunter_tools.company_researcher:CompanyResearcherTool"
+career_compass = "job_hunter_tools.career_compass:CareerCompassTool"

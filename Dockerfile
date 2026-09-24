@@ -4,11 +4,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     curl git ca-certificates libnss3 libnspr4 libatk-bridge2.0-0 libdrm2 \
     libdbus-1-3 libxkbcommon0 libatspi2.0-0 libxcomposite1 libxdamage1 \
     libxfixes3 libxrandr2 libgbm1 libpango-1.0-0 libcairo2 libasound2 \
-    libatk1.0-0 libcups2 libxshmfence1 poppler-utils \
+    libatk1.0-0 libcups2 libxshmfence1 poppler-utils libgomp1 \
     && rm -rf /var/lib/apt/lists/*
 
 RUN pip install --no-cache-dir nanobot-ai && \
-    pip install --no-cache-dir playwright httpx beautifulsoup4 jinja2 && \
+    pip install --no-cache-dir playwright httpx beautifulsoup4 jinja2 scikit-learn PyPDF2 && \
     PLAYWRIGHT_BROWSERS_PATH=/opt/playwright playwright install chromium && \
     PLAYWRIGHT_BROWSERS_PATH=/opt/playwright playwright install-deps chromium
 

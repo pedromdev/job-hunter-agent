@@ -15,36 +15,22 @@ TEMPLATES_DIR = Path(os.environ.get("JOB_HUNTER_TEMPLATES", str(Path(__file__).p
 OUTPUT_DIR = Path(os.environ.get("JOB_HUNTER_OUTPUT", str(Path.home() / ".nanobot" / "workspace" / "output")))
 
 DTO_EXAMPLE = '''{
-  "name": "John Doe",
-  "role": "Software Engineer",
-  "contact": { "email": "john@email.com", "phone": "+55 11 ...", "linkedin": "john", "github": "john" },
-  "about": "Full stack developer with 10+ years...",
+  "name": "JOHN DOE",
+  "about": "Resumo profissional adaptado à vaga, no padrão diagnóstico → proposta → decisão → execução → resultado...",
   "experiences": [
-    { "company": "ACME Corp", "role": "Backend Engineer", "period": "2021-2025",
-      "description": "Built scalable APIs...",
-      "highlights": ["Reduced latency by 50%", "Led team of 3"] }
-  ],
-  "projects": [
-    { "name": "My App", "description": "A mobile app...", "technologies": ["React Native", "Node.js"] }
-  ],
-  "skills": ["TypeScript", "Python", "AWS"],
-  "education": [
-    { "institution": "MIT", "degree": "BSc Computer Science", "period": "2015-2019" }
-  ],
-  "activities": [
-    { "name": "SBC Programming Marathon", "year": "2013",
-      "description": "Problem-solving developer...",
-      "technologies": ["Java"], "url": "https://..." }
+    { "company": "ACME Corp", "role": "Senior Full Stack Developer", "period": "2021-2025",
+      "bullets": ["Diagnóstico: ... Proposta: ... Resultado: -50% latência", "..."] }
   ]
 }'''
 
 _TOOL_PARAMS = tool_parameters_schema(
     resume_data=StringSchema(
-        'JSON string with resume content. Use EXACT data types: '
-        'experiences is ARRAY of objects, highlights is ARRAY of strings, '
-        'projects is ARRAY of objects, technologies is ARRAY of strings, '
-        'skills is ARRAY of strings, education is ARRAY of objects, '
-        'activities is OPTIONAL ARRAY of objects (omit completely if none). '
+        'JSON string with resume content. The template is FIXED (header, education, '
+        'technologies, languages and skills are baked in). The JSON controls only: '
+        'name (used just for the output filename), '
+        'about (string with the professional summary), and '
+        'experiences (ARRAY of {company:string, role:string, period:string, '
+        'bullets: ARRAY of strings}). '
         'Follow this structure exactly (fields are optional but types must match): ' + DTO_EXAMPLE,
     ),
     template_lang=StringSchema(
@@ -52,6 +38,9 @@ _TOOL_PARAMS = tool_parameters_schema(
     ),
     job_title=StringSchema(
         "Job title for the filename. Will generate '<job_title> - <name>.pdf'",
+    ),
+    ats_txt=StringSchema(
+        "Generate ATS-friendly .txt alongside PDF. 'true' or 'false' (default 'true')",
     ),
     required=["resume_data", "job_title"],
 )
@@ -62,15 +51,17 @@ class ResumeGeneratorTool(Tool):
     name = "resume_generator"
     description = (
         "Gera um currículo em PDF a partir de dados JSON. "
-        "Usa template HTML com Tailwind CSS renderizado via Playwright (Chrome headless). "
-        "O parâmetro resume_data deve conter um JSON com os dados do currículo."
+        "Usa template HTML renderizado via Playwright (Chrome headless). "
+        "O template é fixo (cabeçalho, formação, tecnologias, idiomas e habilidades vêm do template). "
+        "O JSON controla apenas 'about' e 'experiences' (role, company, period, bullets); "
+        "'name' define o nome do arquivo."
     )
 
     @property
     def read_only(self) -> bool:
         return False
 
-    async def execute(self, resume_data: str, template_lang: str = "pt-br", job_title: str = "", **kwargs: Any) -> str:
+    async def execute(self, resume_data: str, template_lang: str = "pt-br", job_title: str = "", ats_txt: str = "true", **kwargs: Any) -> str:
         try:
             data = json.loads(resume_data) if isinstance(resume_data, str) else resume_data
         except json.JSONDecodeError as e:
@@ -113,12 +104,27 @@ class ResumeGeneratorTool(Tool):
         except Exception as e:
             return f"Error ao gerar PDF: {e}"
 
-        return f"PDF gerado: {output_path}"
+        result = f"PDF gerado: {output_path}"
+
+        if ats_txt.lower() == "true":
+            try:
+                txt_path = OUTPUT_DIR / f"{filename}.txt"
+                txt_file = TEMPLATES_DIR / f"resume.{template_lang}.txt"
+                if txt_file.exists():
+                    txt_template = txt_file.read_text(encoding="utf-8")
+                    template_txt = Template(txt_template)
+                    txt_content = template_txt.render(**data)
+                    txt_path.write_text(txt_content, encoding="utf-8")
+                    result += f"\nATS .txt gerado: {txt_path}"
+            except Exception as e:
+                result += f"\nAviso: erro ao gerar .txt ATS: {e}"
+
+        return result
 
     def _coerce_types(self, data: dict) -> dict:
         data = dict(data)
 
-        array_of_string_fields = ["skills"]
+        array_of_string_fields = ["skills", "competencias"]
         for key in array_of_string_fields:
             val = data.get(key)
             if isinstance(val, str):
@@ -126,7 +132,7 @@ class ResumeGeneratorTool(Tool):
             elif val is None:
                 data[key] = []
 
-        array_of_objects_fields = ["experiences", "projects", "education", "activities"]
+        array_of_objects_fields = ["experiences", "other_experiences", "projects", "education", "activities"]
         for key in array_of_objects_fields:
             val = data.get(key)
             if isinstance(val, dict):
@@ -136,11 +142,11 @@ class ResumeGeneratorTool(Tool):
 
         for exp in data.get("experiences", []):
             if isinstance(exp, dict):
-                h = exp.get("highlights")
-                if isinstance(h, str):
-                    exp["highlights"] = [h]
-                elif h is None:
-                    exp["highlights"] = []
+                b = exp.get("bullets")
+                if isinstance(b, str):
+                    exp["bullets"] = [b]
+                elif b is None:
+                    exp["bullets"] = []
 
         for act in data.get("activities", []):
             if isinstance(act, dict):
@@ -157,5 +163,11 @@ class ResumeGeneratorTool(Tool):
                     proj["technologies"] = [t]
                 elif t is None:
                     proj["technologies"] = []
+
+        destaques = data.get("destaques")
+        if isinstance(destaques, dict):
+            data["destaques"] = [destaques]
+        elif destaques is None:
+            data["destaques"] = []
 
         return data

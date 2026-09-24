@@ -16,10 +16,13 @@ OUTPUT_DIR = Path(os.environ.get("JOB_HUNTER_OUTPUT", str(Path.home() / ".nanobo
 
 _TOOL_PARAMS = tool_parameters_schema(
     letter_data=StringSchema(
-        'JSON string with letter content. body_paragraphs must be ARRAY of strings. '
+        'JSON string with letter content. '
         "Structure: "
         "{recruiter_name, recruiter_email, company, job_title, "
-        'body_paragraphs: [str], name, contact: {email, phone, linkedin}}',
+        'body_paragraphs: [str], name, contact: {email, phone, linkedin}, '
+        'opening_line: str (1st line — specificity about company/role), '
+        'proof_line: str (2nd line — metric-driven proof from resume), '
+        "ask_line: str (3rd line — small ask like 15-min chat)}",
     ),
     template_lang=StringSchema(
         "Template language: 'pt-br' for Portuguese, 'en' for English",
